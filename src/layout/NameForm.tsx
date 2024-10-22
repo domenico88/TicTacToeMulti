@@ -1,29 +1,36 @@
+import {
+  Avatar,
+  AvatarGroup,
+  Button,
+  Input,
+  Spinner,
+  Stack,
+} from "@chakra-ui/react";
 import React, { useState, useEffect } from "react";
-import supabase from "../supabaseClient"; // Assicurati di avere il client Supabase configurato correttamente
+import RealTimeDrawing from "../components/RealTimeDrawingBoard";
+import supabase from "../supabaseClient";
 
 const GameLogin: React.FC = () => {
-  const [username, setUsername] = useState(""); // Stato per l'username
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Stato per tracciare il login
-  const [onlinePlayers, setOnlinePlayers] = useState<string[]>([]); // Stato per i giocatori online
-  const [channel, setChannel] = useState<any>(null); // Stato per il canale
+  const [username, setUsername] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [onlinePlayers, setOnlinePlayers] = useState<string[]>([]);
+  const [channel, setChannel] = useState<any>(null);
 
-  // Funzione che si attiva al click del bottone di login
   const handleLogin = async () => {
     if (!username) {
       alert("Please enter a username!");
       return;
     }
 
-    // Creiamo il canale di presence
     const newChannel = supabase.channel("game-room", {
       config: {
         presence: {
-          key: username, // Usa l'username come chiave univoca
+          key: username,
         },
+        broadcast: { self: true },
       },
     });
 
-    // Proviamo a sottoscriverci al canale e gestire eventuali errori
     newChannel.subscribe(async (status, error) => {
       if (error) {
         console.error("Errore nella sottoscrizione al canale:", error.message);
@@ -33,15 +40,13 @@ const GameLogin: React.FC = () => {
       if (status === "SUBSCRIBED") {
         console.log(`${username} is subscribed to game-room`);
 
-        // Imposta lo stato come loggato
         setIsLoggedIn(true);
 
-        // Aggiungi gestione degli eventi di presence
         newChannel
           .on("presence", { event: "sync" }, () => {
             const state = newChannel.presenceState();
             const players = Object.keys(state);
-            setOnlinePlayers(players); // Aggiorna la lista dei giocatori online
+            setOnlinePlayers(players);
             console.log("Players online:", players);
           })
           .on("presence", { event: "join" }, ({ key }) => {
@@ -55,45 +60,100 @@ const GameLogin: React.FC = () => {
           user: username,
           online_at: new Date().toISOString(),
         });
-        // Salva il canale nello stato
+
         setChannel(newChannel);
       }
     });
   };
 
-  // Funzione per disconnettere l'utente e rimuovere la presenza
   const handleLogout = () => {
     if (channel) {
-      supabase.removeChannel(channel); // Rimuovi il canale
-      setIsLoggedIn(false); // Reimposta lo stato di login
-      setUsername(""); // Reset dell'username
-      setOnlinePlayers([]); // Svuota la lista dei giocatori online
+      supabase.removeChannel(channel);
+      setIsLoggedIn(false);
+      setUsername("");
+      setOnlinePlayers([]);
     }
   };
 
   return (
-    <div>
+    <div style={{ height: "100%" }}>
       {!isLoggedIn ? (
-        <div>
-          <h2>Login</h2>
-          <input
-            type="text"
-            placeholder="Enter username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-          <button onClick={handleLogin}>Login</button>
+        <div
+          style={{
+            display: "flex",
+            height: "100%",
+            alignItems: "100%",
+            justifyContent: "center",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 10,
+              justifyContent: "center",
+            }}
+          >
+            <Input
+              type="text"
+              placeholder="Enter username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <Button style={{ width: "100%" }} onClick={handleLogin}>
+              Login
+            </Button>
+          </div>
         </div>
       ) : (
-        <div>
-          <h2>Welcome, {username}!</h2>
-          <button onClick={handleLogout}>Logout</button>
-          <h3>Players Online</h3>
-          <ul>
-            {onlinePlayers.map((player) => (
-              <li key={player}>{player}</li>
-            ))}
-          </ul>
+        <div
+          style={{ display: "flex", flexDirection: "column", height: "100%" }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              width: "100%",
+              padding: 24,
+              backgroundColor: "#e56b6f",
+            }}
+          >
+            <AvatarGroup>
+              {onlinePlayers.map((player) => (
+                <Avatar
+                  key={player}
+                  bg="#eaac8b"
+                  name={player.substring(0, 1).toUpperCase()}
+                />
+              ))}
+            </AvatarGroup>
+            <div>
+              <Button onClick={handleLogout} bg="#b56576" color="#355070">
+                Logout
+              </Button>
+            </div>
+          </div>
+          {onlinePlayers.length < 2 && (
+            <div
+              style={{
+                display: "flex",
+                height: "100%",
+                alignItems: "center",
+                justifyContent: "center",
+                flexDirection: "column",
+              }}
+            >
+              <div>
+                <span>Waiting for other players...</span>
+              </div>
+              <div>
+                <Stack direction="row" spacing={4}>
+                  <Spinner color="#355070" size="xl" />
+                </Stack>
+              </div>
+            </div>
+          )}
+          {onlinePlayers.length >= 2 && <RealTimeDrawing channel={channel} />}
         </div>
       )}
     </div>

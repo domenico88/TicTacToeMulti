@@ -1,11 +1,7 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { AppContextProvider, useAppContext } from "./context/appContext";
-import { BrowserRouter, Route, Router, Routes } from "react-router-dom";
-import { Header } from "./layout/Header";
+import { BrowserRouter, Route,  Routes } from "react-router-dom";
 import { ChakraProvider } from "@chakra-ui/react";
 import NameForm from "./layout/NameForm";
 
@@ -14,22 +10,21 @@ const root = ReactDOM.createRoot(
 );
 
 root.render(
-  
-    <ChakraProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <>
-               <NameForm/>
-              </>
-            }
-          />
-          <Route path="*" element={<p>Not found</p>} />
-        </Routes>
-      </BrowserRouter>
-    </ChakraProvider>
+  <ChakraProvider>
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <>
+              <NameForm />
+            </>
+          }
+        />
+        <Route path="*" element={<p>Not found</p>} />
+      </Routes>
+    </BrowserRouter>
+  </ChakraProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function
