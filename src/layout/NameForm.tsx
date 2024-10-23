@@ -8,6 +8,7 @@ import {
 } from "@chakra-ui/react";
 import React, { useState, useEffect } from "react";
 import RealTimeDrawing from "../components/RealTimeDrawingBoard";
+import WhatToDrow from "../components/WhatToDrawGpt";
 import supabase from "../supabaseClient";
 
 const GameLogin: React.FC = () => {
@@ -153,7 +154,12 @@ const GameLogin: React.FC = () => {
               </div>
             </div>
           )}
-          {onlinePlayers.length >= 2 && <RealTimeDrawing channel={channel} />}
+          {onlinePlayers.length >= 2 && (
+            <>
+              <WhatToDrow />
+              <RealTimeDrawing channel={channel} />
+            </>
+          )}
         </div>
       )}
     </div>
