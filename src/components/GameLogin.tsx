@@ -6,17 +6,19 @@ import {
   Spinner,
   Stack,
 } from "@chakra-ui/react";
-import React, { useState, useEffect } from "react";
-import RealTimeDrawing from "../components/RealTimeDrawingBoard";
-import WhatToDrow from "../components/WhatToDrawGpt";
+import React, { useState } from "react";
+import Chat from "./Chat";
+import RealTimeDrawing from "./RealTimeDrawingBoard";
+import WhatToDrow from "./WhatToDrawGpt";
 import supabase from "../supabaseClient";
+import { IoChatboxEllipsesOutline } from "react-icons/io5";
 
 const GameLogin: React.FC = () => {
   const [username, setUsername] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [onlinePlayers, setOnlinePlayers] = useState<string[]>([]);
   const [channel, setChannel] = useState<any>(null);
-
+  const [openChat, setOpenChat] = useState<boolean>(false);
   const handleLogin = async () => {
     if (!username) {
       alert("Please enter a username!");
@@ -110,6 +112,7 @@ const GameLogin: React.FC = () => {
         <div
           style={{ display: "flex", flexDirection: "column", height: "100%" }}
         >
+          {openChat && <Chat channel={channel} username={username} />}
           <div
             style={{
               display: "flex",
@@ -119,15 +122,24 @@ const GameLogin: React.FC = () => {
               backgroundColor: "#e56b6f",
             }}
           >
-            <AvatarGroup>
-              {onlinePlayers.map((player) => (
-                <Avatar
-                  key={player}
-                  bg="#eaac8b"
-                  name={player.substring(0, 1).toUpperCase()}
-                />
-              ))}
-            </AvatarGroup>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <AvatarGroup>
+                {onlinePlayers.map((player) => (
+                  <Avatar
+                    key={player}
+                    bg="#eaac8b"
+                    name={player.substring(0, 1).toUpperCase()}
+                  />
+                ))}
+              </AvatarGroup>
+              <IoChatboxEllipsesOutline
+                size="2em"
+                color="white"
+                onClick={() => setOpenChat(!openChat)}
+                style={{ cursor: "pointer", marginLeft: 10 }}
+              />
+            </div>
+
             <div>
               <Button onClick={handleLogout} bg="#b56576" color="#355070">
                 Logout

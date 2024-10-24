@@ -1,3 +1,4 @@
+import { Button } from "@chakra-ui/react";
 import React, { useRef, useState, useEffect } from "react";
 import supabase from "../supabaseClient";
 
@@ -43,23 +44,55 @@ const RealTimeDrawing: React.FC<{ channel: any }> = ({ channel }) => {
     draw(offsetX, offsetY);
   };
 
+  const clearCanvas = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    channel.send({
+      type: "broadcast",
+      event: "clear_draw",
+    });
+  };
+
   channel.on("broadcast", { event: "draw" }, (payload: any) => {
     const { payload: x, payload: y } = payload;
-    draw(x.x, y.y, false); // Disegna senza reinviare il broadcast
+    draw(x.x, y.y, false);
+  });
+
+  channel.on("broadcast", { event: "clear_draw" }, (payload: any) => {
+    clearCanvas();
   });
 
   return (
-    <div>
-      <canvas
-        ref={canvasRef}
-        width={400}
-        height={400}
-        style={{ border: "1px solid black" }}
-        onMouseDown={startDrawing}
-        onMouseMove={handleMouseMove}
-        onMouseUp={stopDrawing}
-        onMouseLeave={stopDrawing}
-      />
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        width: "100%",
+        alignContent: "center",
+        alignItems: "center",
+        flexDirection: "column",
+      }}
+    >
+      <div>
+        <canvas
+          ref={canvasRef}
+          width={400}
+          height={400}
+          style={{ border: "1px solid black" }}
+          onMouseDown={startDrawing}
+          onMouseMove={handleMouseMove}
+          onMouseUp={stopDrawing}
+          onMouseLeave={stopDrawing}
+        />
+      </div>
+      <div>
+        <Button onClick={clearCanvas} sx={{ width: 400, marginTop: "8px" }}>
+          Clear
+        </Button>
+      </div>
     </div>
   );
 };

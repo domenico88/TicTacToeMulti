@@ -62,7 +62,7 @@ const WhatToDrow: React.FC = () => {
       }}
     >
       <Input
-        placeholder="Cosa ti piacerebbe disegnare?"
+        placeholder="What would you like to draw?"
         onChange={(e) => setGptUserRequest(e.target.value)}
         style={{ width: "50%" }}
       />
@@ -70,7 +70,7 @@ const WhatToDrow: React.FC = () => {
         onClick={() => getContext(gptUserRequest || "")}
         sx={{ width: "50%", marginTop: "24px" }}
       >
-        Suggerisci disegno
+        Draw
       </Button>{" "}
       {loading ? <Spinner /> : <div>{context}</div>}
     </div>

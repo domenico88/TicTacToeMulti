@@ -3,7 +3,7 @@ import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter, Route,  Routes } from "react-router-dom";
 import { ChakraProvider } from "@chakra-ui/react";
-import NameForm from "./layout/NameForm";
+import GameLogin from "./components/GameLogin";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -17,7 +17,7 @@ root.render(
           path="/"
           element={
             <>
-              <NameForm />
+              <GameLogin />
             </>
           }
         />
