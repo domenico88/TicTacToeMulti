@@ -1,6 +1,7 @@
-import { Button, Input, Spinner, useStepContext } from "@chakra-ui/react";
+import { Button, Input, Spinner } from "@chakra-ui/react";
 import axios from "axios";
 import { useState } from "react";
+import { MdOutlineDraw } from "react-icons/md";
 
 const WhatToDrow: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -18,7 +19,7 @@ const WhatToDrow: React.FC = () => {
               {
                 role: "system",
                 content:
-                  "Suggerisci un contesto che può essere un oggetto, un'azione, un animale , qualcosa da mangiare per disegnarlo o altro.In massimo due parole.",
+                  "Suggerisci un contesto che può essere un oggetto, un'azione, un animale , qualcosa da mangiare per disegnarlo o altro.In massimo tre parole.",
               },
               {
                 role: "user",
@@ -51,9 +52,7 @@ const WhatToDrow: React.FC = () => {
   return (
     <div
       style={{
-        marginTop: "24px",
-        marginBottom: "24px",
-        width: "100%%",
+        width: "100%",
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
@@ -61,18 +60,41 @@ const WhatToDrow: React.FC = () => {
         alignItems: "center",
       }}
     >
-      <Input
-        placeholder="What would you like to draw?"
-        onChange={(e) => setGptUserRequest(e.target.value)}
-        style={{ width: "50%" }}
-      />
-      <Button
-        onClick={() => getContext(gptUserRequest || "")}
-        sx={{ width: "50%", marginTop: "24px" }}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          width: "100%",
+          justifyContent: "center",
+        }}
       >
-        Draw
-      </Button>{" "}
-      {loading ? <Spinner /> : <div>{context}</div>}
+        <Input
+          placeholder="What would you like to draw?"
+          onChange={(e) => setGptUserRequest(e.target.value)}
+          style={{ width: "50%" }}
+          sx={{
+            "&::placeholder": {
+              textOverflow: "ellipsis !important",
+              color: "white",
+            },
+          }}
+        />
+        <MdOutlineDraw
+          onClick={() => getContext(gptUserRequest || "")}
+          size="2rem"
+          color="white"
+          style={{ marginLeft: 24, cursor: "pointer" }}
+        />
+      </div>
+      <div>
+        {loading ? (
+          <Spinner />
+        ) : (
+          <div style={{ marginTop: 8, fontWeight: "bold", color: "white" }}>
+            {context}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

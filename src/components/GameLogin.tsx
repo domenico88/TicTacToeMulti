@@ -12,6 +12,9 @@ import RealTimeDrawing from "./RealTimeDrawingBoard";
 import WhatToDrow from "./WhatToDrawGpt";
 import supabase from "../supabaseClient";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
+import Background from "../media/background.webp";
+
+import { IoLogOutOutline } from "react-icons/io5";
 
 const GameLogin: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -79,7 +82,15 @@ const GameLogin: React.FC = () => {
   };
 
   return (
-    <div style={{ height: "100%" }}>
+    <div
+      style={{
+        height: "100%",
+        backgroundImage: `url("${Background}")`,
+        backgroundSize: "cover",
+        backgroundRepeat: "no-repeat",
+        width: "100%",
+      }}
+    >
       {!isLoggedIn ? (
         <div
           style={{
@@ -101,9 +112,18 @@ const GameLogin: React.FC = () => {
               type="text"
               placeholder="Enter username"
               value={username}
+              sx={{ border: "3px solid #03045e", borderRadius: "20px" }}
               onChange={(e) => setUsername(e.target.value)}
             />
-            <Button style={{ width: "100%" }} onClick={handleLogin}>
+            <Button
+              sx={{
+                width: "100%",
+                backgroundColor: "transparent",
+                border: "3px solid #03045e",
+                borderRadius: "20px",
+              }}
+              onClick={handleLogin}
+            >
               Login
             </Button>
           </div>
@@ -118,16 +138,20 @@ const GameLogin: React.FC = () => {
               display: "flex",
               justifyContent: "space-between",
               width: "100%",
-              padding: 24,
-              backgroundColor: "#e56b6f",
+              padding: "24px",
+              alignItems: "center",
+              background:
+                "linear-gradient(90deg, rgba(0,180,216,1) 0%, rgba(251,133,0,1) 75%)",
             }}
           >
-            <div style={{ display: "flex", alignItems: "center" }}>
+            <div
+              style={{ display: "flex", alignItems: "center", width: "100%" }}
+            >
               <AvatarGroup>
                 {onlinePlayers.map((player) => (
                   <Avatar
                     key={player}
-                    bg="#eaac8b"
+                    bg="#fb8500"
                     name={player.substring(0, 1).toUpperCase()}
                   />
                 ))}
@@ -138,12 +162,15 @@ const GameLogin: React.FC = () => {
                 onClick={() => setOpenChat(!openChat)}
                 style={{ cursor: "pointer", marginLeft: 10 }}
               />
+              {onlinePlayers.length >= 2 && <WhatToDrow />}
             </div>
 
             <div>
-              <Button onClick={handleLogout} bg="#b56576" color="#355070">
-                Logout
-              </Button>
+              <IoLogOutOutline
+                onClick={handleLogout}
+                color="white"
+                size="2rem"
+              />
             </div>
           </div>
           {onlinePlayers.length < 2 && (
@@ -166,12 +193,7 @@ const GameLogin: React.FC = () => {
               </div>
             </div>
           )}
-          {onlinePlayers.length >= 2 && (
-            <>
-              <WhatToDrow />
-              <RealTimeDrawing channel={channel} />
-            </>
-          )}
+          {onlinePlayers.length >= 2 && <RealTimeDrawing channel={channel} />}
         </div>
       )}
     </div>
