@@ -46,11 +46,6 @@ const RealTimeDrawing: React.FC<{ channel: any }> = ({ channel }) => {
   };
 
   const clearCanvas = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const context = canvas.getContext("2d");
-    if (!context) return;
-    context.clearRect(0, 0, canvas.width, canvas.height);
     channel.send({
       type: "broadcast",
       event: "clear_draw",
@@ -63,7 +58,12 @@ const RealTimeDrawing: React.FC<{ channel: any }> = ({ channel }) => {
   });
 
   channel.on("broadcast", { event: "clear_draw" }, (payload: any) => {
-    clearCanvas();
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.beginPath();
   });
 
   return (
